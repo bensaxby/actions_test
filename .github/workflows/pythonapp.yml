@@ -43,11 +43,11 @@ jobs:
       run: |
         sudo apt-get install libxml-xpath-perl
         coverage=`xpath -e /coverage/@line-rate coverage.xml | sed -n -e 's/^.*line-rate=//p' | sed -n -e 's/\"//gp'`
-        coverage_percentage=$(bc <<< "$coverage*100.00")
+        coverage_percentage=$(printf %.2f $(bc <<< "$coverage*100"))
         echo ::set-output name=coverage_percentage::$coverage_percentage
     - name: Publish code coverage score as pr comment
       if: github.event.pull_request
       uses: thollander/actions-comment-pull-request@1.0.0
       with:
-        message: 'Code coverage: ${{ steps.extract_coverage.outputs.coverage_percentage }}%.'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        message: 'Test coverage for commit ${{ github.event.pull_request.head.sha }}: ${{ steps.extract_coverage.outputs.coverage_percentage }}%.'
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
