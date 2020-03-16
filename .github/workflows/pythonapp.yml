@@ -37,9 +37,16 @@ jobs:
 #      env:
 #        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 #      run: coveralls --verbose
+    - name: Extract code coverage info
+      id: extract_coverage
+      shell: bash
+      run: |
+        sudo apt-get install libxml-xpath-perl
+        coverage_percentage=$(bc <<< "`xpath -e /coverage/@line-rate coverage.xml | sed -n -e 's/^.*line-rate=//p' | sed -n -e 's/\"//gp'`*100")
+        echo ::set-output name=coverage_percentage::$coverage_percentage
     - name: Publish code coverage score as pr comment
       if: github.event.pull_request
       uses: thollander/actions-comment-pull-request@1.0.0
       with:
-        message: 'Dynamic message : your current branch is ${{ github.head_ref }}. Check [Contexts and expression syntax](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/contexts-and-expression-syntax-for-github-actions) available variables.'
+        message: 'Code coverage: ${{ steps.extract_coverage.outputs.coverage_percentage }}%.'
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
