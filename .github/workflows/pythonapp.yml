@@ -28,12 +28,18 @@ jobs:
       run: |
         pip install pytest
         pytest --cov-report=xml --cov=lib
-    - name: Upload code coverage report to codecov.io
-      uses: codecov/codecov-action@v1
+#    - name: Upload code coverage report to codecov.io
+#      uses: codecov/codecov-action@v1
+#      with:
+#        token: ${{ secrets.CODECOV_TOKEN }}
+#        flags: unittests
+#    - name: Upload code coverage report to coveralls.io
+#      env:
+#        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+#      run: coveralls --verbose
+    - name: Publish code coverage score as pr comment
+      if: github.event.pull_request
+      uses: thollander/actions-comment-pull-request@1.0.0
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        flags: unittests
-    - name: Upload code coverage report to coveralls.io
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      run: coveralls --verbose
+        message: 'Dynamic message : your current branch is ${{ github.head_ref }}. Check [Contexts and expression syntax](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/contexts-and-expression-syntax-for-github-actions) available variables.'
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
