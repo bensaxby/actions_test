@@ -42,7 +42,8 @@ jobs:
       shell: bash
       run: |
         sudo apt-get install libxml-xpath-perl
-        coverage_percentage=$(bc <<< "`xpath -e /coverage/@line-rate coverage.xml | sed -n -e 's/^.*line-rate=//p' | sed -n -e 's/\"//gp'`*100")
+        coverage=`xpath -e /coverage/@line-rate coverage.xml | sed -n -e 's/^.*line-rate=//p' | sed -n -e 's/\"//gp'`
+        coverage_percentage=$(bc <<< "$coverage*100.00")
         echo ::set-output name=coverage_percentage::$coverage_percentage
     - name: Publish code coverage score as pr comment
       if: github.event.pull_request
